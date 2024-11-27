@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `User` MODIFY `jwt` VARCHAR(500) NULL;

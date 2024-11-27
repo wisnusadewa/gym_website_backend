@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `User` ADD COLUMN `dateEnd` VARCHAR(191) NULL,
+    ADD COLUMN `dateStart` VARCHAR(191) NULL,
+    ADD COLUMN `member1` VARCHAR(191) NULL,
+    ADD COLUMN `member2` VARCHAR(191) NULL;

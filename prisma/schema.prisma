@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+// SERVICE
+model Service {
+  id                        String @id @default(cuid())
+  pax                       String
+  price                     Float
+  month                     String
+  tags                      String
+  description               String?
+  duration                  Int
+  transactionItem           TransactionsItem[]
+
+  // @@map("service")
+}
+
+// USER
+model User {
+  id            String @id @default(cuid())
+  email         String @unique
+  password                  String
+  jwt                       String? @db.VarChar(500)
+  role                      Role  @default(CLIENT)
+  photo                     String?
+  comment                   Comment[]
+  memberName                String?
+  transactions              Transactions[]
+  
+  // @@map("user")
+}
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+
+model Transactions {
+  id                            String  @id @db.VarChar(110)
+  transactionStatusUser         StatusUser @default(NONE)
+  transactionStatusPayment      StatusPayment @default(NONE)
+  dateStart                     DateTime?
+  dateEnd                       DateTime?
+  user                          User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId                        String
+  transactionItem               TransactionsItem[]
+
+  // @@map("transaction")
+  
+}
+
+enum StatusUser {
+  NONE
+  ACTIVE
+  EXPIRED
+  PENDING
+}
+enum StatusPayment {
+  NONE
+  REJECT
+  PAID
+  PENDING
+}
+
+model TransactionsItem {
+  id                        String @id @db.VarChar(110)
+  transaction               Transactions @relation(fields: [transactionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  transactionId             String 
+  service                   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  serviceId                 String
+
+  // @@index([transactionId], map: "transactionId")
+  // @@index([serviceId], map: "serviceId")
+  // @@map("transactionItem")
+}
+
+
+
+
+
+
+// ==================================================
+
+
+// COMMENT
+model Comment {
+  id            String @id @default(cuid())
+  text          String
+  createAt      DateTime @default(now())
+  author        User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId        String 
+}
+
+
+// PROFILE USER
+// model Profile {
+//   id                String @id @default(cuid())
+//   pax               String
+//   price             Float
+//   month             String
+//   membersName       String
+//   start             DateTime @default(now())
+//   end               String // end = start + layanan month yang dipilih
+//   status            Status? @default(NONE)
+//   user              User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   userId            String @unique
+// }
+
+
+
